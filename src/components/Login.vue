@@ -25,40 +25,92 @@
         Здравствуйте! Вы уже зарегистрированы.
       </span>
     </ValidationProvider>
+    <!-- Поля для регистрации -->
+    <template v-if="registraton">
+      <ValidationProvider
+        class="form-group"
+        tag="div"
+        name="ФИО"
+        rules="telephone"
+        v-slot="{ errors, classes }"
+      >
+        <label>
+          <span class="form-group__title">ФИО</span>
+          <input
+            :class="classes"
+            v-model="form.name"
+            type="text"
+            placeholder="Фамилия Имя Отчество"
+          />
+          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
+        </label>
+      </ValidationProvider>
 
-    <ValidationProvider
-      class="form-group"
-      tag="div"
-      name="ФИО"
-      rules="telephone"
-      v-slot="{ errors, classes }"
-    >
-      <label>
-        <span class="form-group__title">ФИО</span>
-        <input
-          :class="classes"
-          v-model="form.name"
-          type="text"
-          placeholder="Фамилия Имя Отчество"
-        />
-        <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
-      </label>
-    </ValidationProvider>
+      <ValidationProvider
+        class="form-group"
+        tag="div"
+        name="Телефон"
+        rules="telephone"
+        v-slot="{ errors, classes }"
+      >
+        <label>
+          <span class="form-group__title">Телефон</span>
+          <input :class="classes" type="tel" v-model="form.phone" />
+          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
+        </label>
+      </ValidationProvider>
+      <!-- пароль -->
+      <ValidationObserver>
+        <ValidationProvider
+          class="form-group"
+          name="password"
+          tag="div"
+          rules="required|password:confirmation"
+          v-slot="{ errors, classes }"
+        >
+          <label>
+            <span class="form-group__title">Введите пароль</span>
+            <input :class="classes" v-model="form.password" type="password" />
+            <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
+          </label>
+        </ValidationProvider>
 
-    <ValidationProvider
-      class="form-group"
-      tag="div"
-      name="Телефон"
-      rules="telephone"
-      v-slot="{ errors, classes }"
-    >
-      <label>
-        <span class="form-group__title">Телефон</span>
-        <input :class="classes" type="tel" v-model="form.phone" />
-        <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
-      </label>
-    </ValidationProvider>
-    <button :disabled="!valid" type="submit">Регистрация</button>
+        <ValidationProvider
+          class="form-group"
+          tag="div"
+          name="confirmation"
+          rules="required"
+          v-slot="{ errors, classes }"
+        >
+          <label>
+            <span class="form-group__title">Подтверждение пароля</span>
+            <input :class="classes" v-model="confirm" type="password" />
+            <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
+          </label>
+        </ValidationProvider>
+      </ValidationObserver>
+      <button :disabled="!valid" type="submit">Регистрация</button>
+    </template>
+    <!-- Поля для входа -->
+    <template v-else>
+      <ValidationObserver>
+        <ValidationProvider
+          class="form-group"
+          tag="div"
+          rules="required"
+          v-slot="{ errors, classes }"
+        >
+          <label>
+            <span class="form-group__title">Введите пароль</span>
+            <input :class="classes" v-model="login.password" type="password" />
+            <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
+          </label>
+        </ValidationProvider>
+      </ValidationObserver>
+      <a href="#" class="link">Забыли пароль?</a>
+
+      <button :disabled="!valid" type="submit">Вход</button>
+    </template>
   </ValidationObserver>
 </template>
 
@@ -86,6 +138,12 @@ extend('telephone', {
   message: 'введите больше 10 цифр',
 });
 
+extend('password', {
+  validate: (value, { other }) => value === other,
+  message: 'Подтверждение пароля не совпадает',
+  params: [{ name: 'other', isTarget: true }],
+});
+
 export default {
   components: {
     ValidationProvider,
@@ -96,12 +154,16 @@ export default {
     value: null,
     validEmail: false,
     registraton: true,
+    confirm: null,
     form: {
       email: null,
       lastName: null,
       name: null,
       secondName: null,
       phone: null,
+      password: null,
+    },
+    login: {
       password: null,
     },
   }),
