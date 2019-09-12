@@ -12,6 +12,8 @@
     "core-js": "^2.6.5",
     "font-awesome": "^4.7.0",
     "normalize.css": "^8.0.1",
+    "vee-validate": "^3.0.4",
+    "vue": "^2.6.10",
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.11.0",
