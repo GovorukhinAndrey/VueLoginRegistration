@@ -95,7 +95,7 @@
         </label>
       </ValidationProvider>
       <!-- </ValidationObserver> -->
-      <button :disabled="!valid" type="submit">Регистрация</button>
+      <button :disabled="!valid" @click.prevent="onSubmit" type="submit">Регистрация</button>
     </template>
     <!-- Поля для входа -->
     <template v-else>
@@ -135,7 +135,7 @@
       </ValidationProvider>
       <a href="#" class="link">Забыли пароль?</a>
 
-      <button :disabled="!valid" type="submit">Вход</button>
+      <button :disabled="!valid" @click.prevent="onSubmit" type="submit">Вход</button>
     </template>
   </ValidationObserver>
 </template>
@@ -260,7 +260,30 @@ export default {
         });
     },
     onSubmit() {
-      alert('форма отправлена');
+      if (this.registraton) {
+        this.userRegistration();
+      }
+    },
+    userRegistration() {
+      axios
+        .post('/user/', {
+          EMAIL: this.form.email,
+          LAST_NAME: this.form.lastName,
+          NAME: this.form.name,
+          SECOND_NAME: this.form.secondName,
+          PERSONAL_PHONE: this.form.phone,
+          AUTHORIZE: 'Y',
+        })
+        .then(response => {
+          console.log(response.data);
+          this.formReset();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    formReset() {
+      alert('сброс формы');
     },
     switchVisibility() {
       this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
