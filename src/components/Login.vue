@@ -22,7 +22,7 @@
         class="form-group"
         tag="div"
         name="ФИО"
-        rules="telephone"
+        :rules="{ fullName: /^[aA-zZа-яА-ЯёЁ]+[\s]+[aA-zZа-яА-ЯёЁ]+[\s]+[aA-zZа-яА-ЯёЁ]+$/ }"
         v-slot="{ errors, classes }"
       >
         <label>
@@ -41,7 +41,7 @@
         class="form-group"
         tag="div"
         name="Телефон"
-        rules="telephone"
+        :rules="{ telephone: 10 }"
         v-slot="{ errors, classes }"
       >
         <label>
@@ -160,8 +160,7 @@ extend('required', {
 extend('min', min);
 
 extend('telephone', {
-  params: ['min:10'],
-  validate: (value, { min }) => Number(value) > min,
+  ...min,
   message: 'введите больше 10 цифр',
 });
 
