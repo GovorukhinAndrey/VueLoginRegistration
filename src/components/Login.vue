@@ -9,7 +9,7 @@
     >
       <label class="email-group" :class="classes">
         <span class="form-group__title">Email</span>
-        <input :class="classes" v-model="form.email" type="email" />
+        <input placeholder="email@mail.com" :class="classes" v-model="form.email" type="email" />
       </label>
       <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
       <span class="form-group__text-done" v-if="!registraton && !invalid">
@@ -46,7 +46,12 @@
       >
         <label>
           <span class="form-group__title">Телефон</span>
-          <input :class="classes" type="tel" v-model="form.phone" />
+          <input
+            placeholder="Введите номер телефона"
+            :class="classes"
+            type="tel"
+            v-model="form.phone"
+          />
           <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
         </label>
       </ValidationProvider>
@@ -80,7 +85,12 @@
       >
         <label>
           <span class="form-group__title">Подтверждение пароля</span>
-          <input :class="classes" v-model="confirm" type="password" />
+          <input
+            placeholder="Повторите пароль"
+            :class="classes"
+            v-model="confirm"
+            type="password"
+          />
           <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
         </label>
       </ValidationProvider>
@@ -116,7 +126,7 @@
           </span>
           <input
             :class="classes"
-            placeholder="Пароль логина"
+            placeholder="Введите пароль"
             v-model="login.password"
             :type="passwordFieldType"
           />
