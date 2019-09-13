@@ -5,25 +5,14 @@
       class="form-group"
       name="email"
       rules="required|email"
-      v-slot="{ errors, valid, classes }"
+      v-slot="{ errors, valid, classes, invalid }"
     >
       <label class="email-group" :class="classes">
         <span class="form-group__title">Email</span>
-        <input
-          :class="classes"
-          @input="
-            {
-              validEmail = valid;
-              if (valid) verifyingExistenceEmail();
-            }
-          "
-          v-model="form.email"
-          type="email"
-        />
+        <input :class="classes" v-model="form.email" type="email" />
       </label>
-      <span>{{ valid }}</span>
       <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
-      <span class="form-group__text-done" v-if="!registraton">
+      <span class="form-group__text-done" v-if="!registraton && !invalid">
         Здравствуйте! Вы уже зарегистрированы.
       </span>
     </ValidationProvider>
@@ -145,6 +134,7 @@
 import axios from '@/axios.js';
 import { ValidationObserver, ValidationProvider } from 'vee-validate';
 import { extend } from 'vee-validate';
+import { validate } from 'vee-validate';
 import { required, email, min } from 'vee-validate/dist/rules';
 
 // Add a rule.
@@ -179,7 +169,6 @@ export default {
   name: 'login',
   data: () => ({
     value: null,
-    validEmail: false,
     registraton: true,
     confirm: null,
     passwordFieldType: 'password',
@@ -196,37 +185,33 @@ export default {
     },
   }),
   mounted() {},
-  computed: {
-    checkValidEmail() {
-      console.log('checkValidEmail');
-
-      if (this.validEmail) {
-        // this.verifyingExistenceEmail();
-        console.log('checkValidEmail-if');
-      }
-      return this.validEmail;
+  watch: {
+    'form.email': function() {
+      this.validateEmail(this.form.email, 'required|email');
     },
   },
+  computed: {},
   methods: {
-    conLog(el) {
-      setTimeout(() => {
-        console.log('ololol', el);
-      }, 100);
-      console.log('ololol', el);
+    validateEmail(value, rules) {
+      validate(value, rules).then(result => {
+        if (result.valid) {
+          this.verifyingExistenceEmail();
+        } else {
+          this.registraton = true;
+        }
+      });
     },
     verifyingExistenceEmail() {
-      console.log('запрос на сервер');
       axios
         .post('/user/check-email-availability/', {
           EMAIL: this.form.email,
         })
         .then(response => {
-          console.log(response.data);
           if (response.data.STATUS === 'ERROR') {
-            console.log(response.data.STATUS);
+            console.log('Email - зарегистрирован');
             this.registraton = false;
           } else if (response.data.STATUS === 'OK') {
-            console.log(response.data.STATUS);
+            console.log('Email - свободен');
             this.registraton = true;
           }
         })
