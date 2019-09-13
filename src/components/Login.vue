@@ -26,7 +26,13 @@
         v-slot="{ errors, classes }"
       >
         <label>
-          <span class="form-group__title">ФИО</span>
+          <span
+            class="form-group__title question"
+            content="Служба доставки выдаст заказ по паспорту"
+            v-tippy
+          >
+            ФИО
+          </span>
           <input
             :class="classes"
             v-model="fullName"
@@ -312,6 +318,12 @@ export default {
 </script>
 
 <style lang="sass">
+.question
+  &::after
+    content: "\F29C"
+    font-family: FontAwesome
+    font-weight: normal
+    color: #b9b9b9
 form
   display: block
   width: 100%
@@ -321,18 +333,20 @@ form
     bottom: 25px
 .form-group
   margin-bottom: 15px
+  text-align: left
   &__title
     font-weight: bold
-    display: block
-    text-align: left
+    display: inline
   &__error
     color: $invalid
-    display: inline-block
+    display: block
     margin-top: 5px
+    text-align: center
   &__text-done
     color: $valid
     margin-top: 5px
-    display: inline-block
+    display: block
+    text-align: center
   &__show-pass-wrapper
     display: flex
     justify-content: space-between
