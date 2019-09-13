@@ -104,7 +104,7 @@
       <button :disabled="!valid" @click.prevent="onSubmit" type="submit">Регистрация</button>
     </template>
     <!-- Поля для входа -->
-    <template v-else>
+    <template v-else-if="!registraton && recovery === false">
       <ValidationProvider
         class="form-group"
         tag="div"
@@ -139,9 +139,17 @@
           <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
         </label>
       </ValidationProvider>
-      <a href="#" class="link">Забыли пароль?</a>
+      <a href="#" @click.prevent="recovery = true" class="link">Забыли пароль?</a>
 
       <button :disabled="!valid" @click.prevent="onSubmit" type="submit">Вход</button>
+    </template>
+    <!-- восстановление пароля -->
+    <template v-else-if="!registraton && recovery === true">
+      <a href="#" @click.prevent="recovery = false" class="link">Вернуться к автризации</a>
+
+      <button :disabled="!valid" @click.prevent="onSubmit" type="submit">
+        Отправить пароль на email
+      </button>
     </template>
   </ValidationObserver>
 </template>
@@ -190,6 +198,7 @@ export default {
   data: () => ({
     value: null,
     registraton: true,
+    recovery: false,
     confirm: null,
     passwordFieldType: 'password',
     fullName: null,
@@ -204,6 +213,7 @@ export default {
     },
     login: {
       password: null,
+      remeber: 'Y',
     },
   }),
   mounted() {},
@@ -244,10 +254,12 @@ export default {
           this.verifyingExistenceEmail();
         } else {
           this.registraton = true;
+          this.recovery = false;
         }
       });
     },
     verifyingExistenceEmail() {
+      console.log('Проверка Email');
       axios
         .post('/user/check-email-availability/', {
           EMAIL: this.form.email,
@@ -268,7 +280,78 @@ export default {
     onSubmit() {
       if (this.registraton) {
         this.userRegistration();
+      } else if (!this.registraton && this.recovery === false) {
+        this.userLogin();
+      } else if (!this.registraton && this.recovery === true) {
+        this.passwordRecovery();
       }
+    },
+    passwordRecovery() {
+      axios
+        .post('/user/password-recovery/', {
+          SESSID: '44673cb5c786ee709b9f3e76923bc6e9',
+          TYPE_PLATFORM: 'desktop',
+          LOGIN: this.form.email,
+        })
+        .then(response => {
+          console.log(response.data);
+          this.$swal('Восстановление пароля', {
+            text: `Пароль отправлен на почту ${response.data.DATA.LOGIN}`,
+            icon: 'success',
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          this.$swal('Error', {
+            text: 'Что то пошло не так :(',
+            icon: 'error',
+          });
+        });
+    },
+    authorizationCheck() {
+      axios
+        .get('/user-session/', {
+          SESSID: '330d207892855dbd5abd5147ea562094',
+          TYPE_PLATFORM: 'desktop',
+        })
+        .then(response => {
+          console.log(response.data);
+          this.$swal('проверка авторизации пользователя', {
+            text: `проверка авторизации пользователя`,
+            icon: 'success',
+          });
+          this.formReset();
+        })
+        .catch(error => {
+          console.log(error);
+          this.$swal('Error', {
+            text: 'Что то пошло не так :(',
+            icon: 'error',
+          });
+        });
+    },
+    userLogin() {
+      axios
+        .get('/user/', {
+          LOGIN: this.form.email,
+          PASSWORD: this.login.password,
+          REMEMBER: this.login.remeber,
+        })
+        .then(response => {
+          console.log(response.data);
+          this.$swal('Пользователь авторизован', {
+            text: `Пользователь с ID = "${response.data.DATA.USER_ID}" авторизован`,
+            icon: 'success',
+          });
+          this.formReset();
+        })
+        .catch(error => {
+          console.log(error);
+          this.$swal('Error', {
+            text: 'Что то пошло не так :(',
+            icon: 'error',
+          });
+        });
     },
     userRegistration() {
       axios
