@@ -1,5 +1,5 @@
 <template>
-  <ValidationObserver v-slot="{ valid }" tag="form" @submit.prevent="onSubmit">
+  <ValidationObserver ref="observer" v-slot="{ valid }" tag="form" @submit.prevent="onSubmit">
     <ValidationProvider
       tag="div"
       class="form-group"
@@ -224,7 +224,7 @@ export default {
       } else if (arrFullName.length === 2) {
         this.placeholderFullName = ' Отчество';
       } else {
-        this.placeholderFullName = '';
+        this.placeholderFullName = 'Фамилия Имя Отчество';
       }
     },
     getFieldsName(fullName) {
@@ -276,14 +276,33 @@ export default {
         })
         .then(response => {
           console.log(response.data);
+          this.$swal('Регистрация прошла успешно', {
+            text: `Пользователь с ID = "${response.data.DATA.USER_ID}" успешно зарегистрирован`,
+            icon: 'success',
+          });
           this.formReset();
         })
         .catch(error => {
           console.log(error);
+          this.$swal('Error', {
+            text: 'Что то пошло не так :(',
+            icon: 'error',
+          });
         });
     },
     formReset() {
-      alert('сброс формы');
+      this.form.email = null;
+      this.form.lastName = null;
+      this.form.name = null;
+      this.form.secondName = null;
+      this.form.phone = null;
+      this.form.password = null;
+      this.login.password = null;
+      this.fullName = null;
+      this.confirm = null;
+      requestAnimationFrame(() => {
+        this.$refs.observer.reset();
+      });
     },
     switchVisibility() {
       this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
