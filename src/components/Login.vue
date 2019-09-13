@@ -14,12 +14,14 @@
           @input="
             {
               validEmail = valid;
+              if (valid) verifyingExistenceEmail();
             }
           "
           v-model="form.email"
           type="email"
         />
       </label>
+      <span>{{ valid }}</span>
       <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
       <span class="form-group__text-done" v-if="!registraton">
         Здравствуйте! Вы уже зарегистрированы.
@@ -59,54 +61,79 @@
           <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
         </label>
       </ValidationProvider>
-      <!-- пароль -->
-      <ValidationObserver>
-        <ValidationProvider
-          class="form-group"
-          name="password"
-          tag="div"
-          rules="required|password:confirmation"
-          v-slot="{ errors, classes }"
-        >
-          <label>
-            <span class="form-group__title">Введите пароль</span>
-            <input :class="classes" v-model="form.password" type="password" />
-            <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
-          </label>
-        </ValidationProvider>
+      <!-- пароль для регистрации-->
+      <!-- <ValidationObserver> -->
+      <ValidationProvider
+        class="form-group"
+        name="password"
+        tag="div"
+        rules="required|password:confirmation"
+        v-slot="{ errors, classes }"
+      >
+        <label>
+          <span class="form-group__title">Введите пароль</span>
+          <input
+            placeholder="Пароль регистрации"
+            :class="classes"
+            v-model="form.password"
+            type="password"
+          />
+          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
+        </label>
+      </ValidationProvider>
 
-        <ValidationProvider
-          class="form-group"
-          tag="div"
-          name="confirmation"
-          rules="required"
-          v-slot="{ errors, classes }"
-        >
-          <label>
-            <span class="form-group__title">Подтверждение пароля</span>
-            <input :class="classes" v-model="confirm" type="password" />
-            <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
-          </label>
-        </ValidationProvider>
-      </ValidationObserver>
+      <ValidationProvider
+        class="form-group"
+        tag="div"
+        name="confirmation"
+        rules="required"
+        v-slot="{ errors, classes }"
+      >
+        <label>
+          <span class="form-group__title">Подтверждение пароля</span>
+          <input :class="classes" v-model="confirm" type="password" />
+          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
+        </label>
+      </ValidationProvider>
+      <!-- </ValidationObserver> -->
       <button :disabled="!valid" type="submit">Регистрация</button>
     </template>
     <!-- Поля для входа -->
     <template v-else>
-      <ValidationObserver>
-        <ValidationProvider
-          class="form-group"
-          tag="div"
-          rules="required"
-          v-slot="{ errors, classes }"
-        >
-          <label>
+      <ValidationProvider
+        class="form-group"
+        tag="div"
+        rules="required"
+        v-slot="{ errors, classes }"
+        key="loginPass"
+      >
+        <label>
+          <span class="form-group__show-pass-wrapper">
             <span class="form-group__title">Введите пароль</span>
-            <input :class="classes" v-model="login.password" type="password" />
-            <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
-          </label>
-        </ValidationProvider>
-      </ValidationObserver>
+            <span
+              @click="switchVisibility"
+              v-if="passwordFieldType === 'password'"
+              class="form-group__show-pass-btn"
+            >
+              <i class="fa fa-eye" aria-hidden="true"></i> Показать пароль
+            </span>
+            <span
+              @click="switchVisibility"
+              v-else-if="passwordFieldType === 'text'"
+              class="form-group__show-pass-btn"
+            >
+              <i class="fa fa-eye-slash" aria-hidden="true"></i> Скрыть пароль
+            </span>
+          </span>
+          <input
+            :class="classes"
+            placeholder="Пароль логина"
+            v-model="login.password"
+            :type="passwordFieldType"
+          />
+          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
+        </label>
+      </ValidationProvider>
       <a href="#" class="link">Забыли пароль?</a>
 
       <button :disabled="!valid" type="submit">Вход</button>
@@ -155,6 +182,7 @@ export default {
     validEmail: false,
     registraton: true,
     confirm: null,
+    passwordFieldType: 'password',
     form: {
       email: null,
       lastName: null,
@@ -171,15 +199,23 @@ export default {
   computed: {
     checkValidEmail() {
       console.log('checkValidEmail');
+
       if (this.validEmail) {
-        this.verifyingExistenceEmail();
+        // this.verifyingExistenceEmail();
         console.log('checkValidEmail-if');
       }
       return this.validEmail;
     },
   },
   methods: {
+    conLog(el) {
+      setTimeout(() => {
+        console.log('ololol', el);
+      }, 100);
+      console.log('ololol', el);
+    },
     verifyingExistenceEmail() {
+      console.log('запрос на сервер');
       axios
         .post('/user/check-email-availability/', {
           EMAIL: this.form.email,
@@ -200,6 +236,9 @@ export default {
     },
     onSubmit() {
       alert('форма отправлена');
+    },
+    switchVisibility() {
+      this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
     },
   },
 };
@@ -227,6 +266,11 @@ form
     color: $valid
     margin-top: 5px
     display: inline-block
+  &__show-pass-wrapper
+    display: flex
+    justify-content: space-between
+  &__show-pass-btn
+    cursor: pointer
 .email-group
   display: block
   position: relative
