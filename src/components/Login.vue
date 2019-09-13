@@ -29,9 +29,9 @@
           <span class="form-group__title">ФИО</span>
           <input
             :class="classes"
-            v-model="form.name"
+            v-model="fullName"
             type="text"
-            placeholder="Фамилия Имя Отчество"
+            :placeholder="placeholderFullName"
           />
           <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
         </label>
@@ -145,7 +145,7 @@ import axios from '@/axios.js';
 import { ValidationObserver, ValidationProvider } from 'vee-validate';
 import { extend } from 'vee-validate';
 import { validate } from 'vee-validate';
-import { required, email, min } from 'vee-validate/dist/rules';
+import { required, email, min, regex } from 'vee-validate/dist/rules';
 
 // Add a rule.
 extend('email', {
@@ -158,6 +158,11 @@ extend('required', {
   message: 'Обязательное поле',
 });
 extend('min', min);
+
+extend('fullName', {
+  ...regex,
+  message: 'Введите Правильное ФИО', // the error message
+});
 
 extend('telephone', {
   ...min,
@@ -181,6 +186,8 @@ export default {
     registraton: true,
     confirm: null,
     passwordFieldType: 'password',
+    fullName: null,
+    placeholderFullName: 'Фамилия Имя Отчество',
     form: {
       email: null,
       lastName: null,
@@ -199,8 +206,32 @@ export default {
       this.validateEmail(this.form.email, 'required|email');
     },
   },
-  computed: {},
+  computed: {
+    fieldsName: function() {
+      let arrFullName = this.fullName.split(' ');
+      this.getFieldsName(arrFullName);
+      let result = this.fullName ? arrFullName : [];
+      this.setPlacholderFullName(result);
+      return result;
+    },
+  },
   methods: {
+    setPlacholderFullName(arrFullName) {
+      if (arrFullName.length === 0) {
+        this.placeholderFullName = 'Фамилия Имя Отчество';
+      } else if (arrFullName.length === 1) {
+        this.placeholderFullName = ' Имя Отчество';
+      } else if (arrFullName.length === 2) {
+        this.placeholderFullName = ' Отчество';
+      } else {
+        this.placeholderFullName = '';
+      }
+    },
+    getFieldsName(fullName) {
+      this.form.lastName = fullName[0];
+      this.form.name = fullName[1];
+      this.form.secondName = fullName[2];
+    },
     validateEmail(value, rules) {
       validate(value, rules).then(result => {
         if (result.valid) {
