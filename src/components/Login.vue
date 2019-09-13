@@ -1,5 +1,6 @@
 <template>
   <ValidationObserver ref="observer" v-slot="{ valid }" tag="form" @submit.prevent="onSubmit">
+    <h2 class="title">{{ getTitle }}</h2>
     <ValidationProvider
       tag="div"
       class="form-group"
@@ -12,7 +13,7 @@
         <input placeholder="email@mail.com" :class="classes" v-model="form.email" type="email" />
       </label>
       <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
-      <span class="form-group__text-done" v-if="!registraton && !invalid">
+      <span class="form-group__text-done" v-if="!registraton && !invalid && recovery === false">
         Здравствуйте! Вы уже зарегистрированы.
       </span>
     </ValidationProvider>
@@ -223,6 +224,17 @@ export default {
     },
   },
   computed: {
+    getTitle: function() {
+      let title = 'Регистрация';
+      if (this.registraton) {
+        title = 'Регистрация';
+      } else if (!this.registraton && this.recovery === false) {
+        title = 'Вход';
+      } else if (!this.registraton && this.recovery === true) {
+        title = 'Восстановление пароля';
+      }
+      return title;
+    },
     fieldsName: function() {
       let arrFullName = this.fullName.split(' ');
       this.getFieldsName(arrFullName);
