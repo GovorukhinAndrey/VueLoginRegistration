@@ -61,7 +61,7 @@
             :class="classes"
             class="form-group__input"
             placeholder="Введите пароль"
-            v-model="login.password"
+            v-model="form.password"
             :type="passwordFieldType"
           />
           <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
@@ -133,48 +133,7 @@
           <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
         </label>
       </ValidationProvider>
-      <!-- пароль для регистрации-->
-      <!-- <ValidationObserver> -->
-      <ValidationProvider
-        class="form-group"
-        name="password"
-        tag="div"
-        rules="required|password:confirmation"
-        v-slot="{ errors, classes }"
-      >
-        <label>
-          <span class="form-group__title">Введите пароль</span>
-          <input
-            placeholder="Пароль регистрации"
-            :class="classes"
-            class="form-group__input"
-            v-model="form.password"
-            type="password"
-          />
-          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
-        </label>
-      </ValidationProvider>
 
-      <ValidationProvider
-        class="form-group"
-        tag="div"
-        name="confirmation"
-        rules="required"
-        v-slot="{ errors, classes }"
-      >
-        <label>
-          <span class="form-group__title">Подтверждение пароля</span>
-          <input
-            placeholder="Повторите пароль"
-            :class="classes"
-            class="form-group__input"
-            v-model="confirm"
-            type="password"
-          />
-          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
-        </label>
-      </ValidationProvider>
-      <!-- </ValidationObserver> -->
       <button :disabled="!valid" class="button" type="submit">
         Регистрация
       </button>
@@ -211,12 +170,6 @@ extend('telephone', {
   message: 'введите больше 10 цифр',
 });
 
-extend('password', {
-  validate: (value, { other }) => value === other,
-  message: 'Подтверждение пароля не совпадает',
-  params: [{ name: 'other', isTarget: true }],
-});
-
 export default {
   components: {
     ValidationProvider,
@@ -227,7 +180,6 @@ export default {
     checkbox: true,
     registraton: true,
     recovery: false,
-    confirm: null,
     passwordFieldType: 'password',
     fullName: null,
     placeholder: {
@@ -242,10 +194,6 @@ export default {
       secondName: null,
       phone: null,
       password: null,
-    },
-    login: {
-      password: null,
-      // remeber: 'Y',
     },
   }),
   mounted() {},
@@ -356,7 +304,7 @@ export default {
       axios
         .post('/user-session/', {
           LOGIN: this.form.email,
-          PASSWORD: this.login.password,
+          PASSWORD: this.form.password,
           REMEMBER: this.remember,
         })
         .then(response => {
