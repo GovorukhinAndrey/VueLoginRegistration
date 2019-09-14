@@ -412,6 +412,8 @@ export default {
   margin: auto
   padding:
     bottom: 25px
+    right: 15px
+    left: 15px
 .form-group
   margin-bottom: 15px
   text-align: left
