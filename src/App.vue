@@ -1,19 +1,19 @@
 <template>
   <div id="app">
     <img class="img-logo" alt="Vue logo" src="./assets/logo.png" />
-    <Login></Login>
+    <Authorisation></Authorisation>
     <!-- <AuthorizationCheck></AuthorizationCheck> -->
   </div>
 </template>
 
 <script>
-const Login = () => import('@/components/Login.vue');
+const Authorisation = () => import('@/components/Authorisation.vue');
 // const AuthorizationCheck = () => import('@/components/AuthorizationCheck.vue');
 
 export default {
   name: 'app',
   components: {
-    Login,
+    Authorisation,
     // AuthorizationCheck,
   },
 };
