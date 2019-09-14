@@ -90,7 +90,6 @@
       </button>
     </template>
     <!-- Поля для регистрации -->
-    <!-- /^[a-zA-Zа-яА-ЯёЁ]+[\s]+[a-zA-Zа-яА-ЯёЁ]+[\s]+[a-zA-Zа-яА-ЯёЁ]+$/ -->
     <template v-else>
       <ValidationProvider
         class="form-group"
