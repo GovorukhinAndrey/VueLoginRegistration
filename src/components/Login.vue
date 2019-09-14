@@ -209,7 +209,7 @@ export default {
       let arrFullName = this.fullName ? fullName.split(' ') : [];
 
       this.setFieldsName(arrFullName);
-      this.setPlacholderFullName(arrFullName);
+      this.checkPlaceholder(arrFullName);
     },
   },
   computed: {
@@ -226,6 +226,19 @@ export default {
     },
   },
   methods: {
+    checkPlaceholder(arrFullName) {
+      let checkUp = arrFullName.filter((el, index) => {
+        return el === '' && !(index === arrFullName.length - 1);
+      });
+
+      if (checkUp.length >= 1) {
+        this.placeholder.lastName = `<span class="transparent">Фамилия</span>`;
+        this.placeholder.name = `<span class="transparent">Имя</span>`;
+        this.placeholder.secondName = `<span class="transparent">Отчество</span>`;
+      } else {
+        this.setPlacholderFullName(arrFullName);
+      }
+    },
     setPlacholderFullName(arrFullName) {
       let name = arrFullName[1];
       let lastName = arrFullName[0];
