@@ -202,7 +202,8 @@ export default {
       this.validateEmail(this.form.email, 'required|email');
     },
     fullName() {
-      let arrFullName = this.fullName.split(' ');
+      let fullName = this.fullName;
+      let arrFullName = this.fullName ? fullName.split(' ') : [];
 
       this.setFieldsName(arrFullName);
       this.setPlacholderFullName(arrFullName);
