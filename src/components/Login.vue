@@ -320,28 +320,6 @@ export default {
           });
         });
     },
-    authorizationCheck() {
-      axios
-        .get('/user-session/', {
-          SESSID: '330d207892855dbd5abd5147ea562094',
-          TYPE_PLATFORM: 'desktop',
-        })
-        .then(response => {
-          console.log(response.data);
-          this.$swal('проверка авторизации пользователя', {
-            text: `проверка авторизации пользователя`,
-            icon: 'success',
-          });
-          this.formReset();
-        })
-        .catch(error => {
-          console.log(error);
-          this.$swal('Error', {
-            text: 'Что то пошло не так :(',
-            icon: 'error',
-          });
-        });
-    },
     userLogin() {
       axios
         .get('/user/', {
