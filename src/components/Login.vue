@@ -357,6 +357,11 @@ export default {
             icon: 'success',
           });
           this.formReset();
+          localStorage.setItem('authToken', response.data.DATA.USER.authToken);
+          localStorage.setItem(
+            'authenticationTicket',
+            response.data.DATA.USER.authenticationTicket
+          );
         })
         .catch(error => {
           console.log(error);

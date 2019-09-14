@@ -9,15 +9,32 @@ import axios from '@/axios.js';
 
 export default {
   name: 'AuthorizationCheck',
-  data: () => ({}),
+  data: () => ({
+    authToken: '',
+    authenticationTicket: '',
+  }),
   mounted() {},
+
   computed: {},
   methods: {
+    getLocalStorage() {
+      if (localStorage.getItem('authToken')) {
+        this.authToken = localStorage.getItem('authToken');
+      } else {
+        this.authToken = '330d207892855dbd5abd5147ea562094';
+      }
+      if (localStorage.getItem('authenticationTicket')) {
+        this.authenticationTicket = localStorage.getItem('authenticationTicket');
+      } else {
+        this.authenticationTicket = '330d207892855dbd5abd5147ea562094';
+      }
+    },
     authorizationCheck() {
+      this.getLocalStorage();
       axios
         .get('/user-session/', {
           params: {
-            SESSID: '330d207892855dbd5abd5147ea562094',
+            SESSID: this.authToken,
             // SESSID: '44673cb5c786ee709b9f3e76923bc6e9',
             TYPE_PLATFORM: 'desktop',
           },
@@ -28,7 +45,6 @@ export default {
             text: `Проверка авторизации пользователя`,
             icon: 'success',
           });
-          this.formReset();
         })
         .catch(error => {
           console.log(error);
