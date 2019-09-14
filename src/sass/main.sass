@@ -2,7 +2,7 @@
 @import "libs"
 
 ::placeholder
-	color: #666
+	color: #a6a6a6
 
 ::selection
 	background-color: $accent
@@ -37,6 +37,7 @@ body
 			border-color: green
 input,button,textarea
 	font-family: $default-font
+	color: $text
 .link
 	text-decoration: none
 	color: #5480ae
@@ -45,4 +46,18 @@ input,button,textarea
 	&:hover
 		color: darken(#5480ae, 20%)
 		border-bottom-color: #fff
+
+.transparent
+	color: transparent
+.btn
+	color: #ffffff
+	background-color: $enabled
+	border-radius: 3px
+	border: none
+	cursor: pointer
+	padding: 10px 20px
+	transition: $tr
+	&:hover
+		background-color: darken($enabled, 10%)
+
 
