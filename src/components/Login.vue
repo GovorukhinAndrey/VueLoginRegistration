@@ -90,12 +90,15 @@
       </button>
     </template>
     <!-- Поля для регистрации -->
+    <!-- /^[a-zA-Zа-яА-ЯёЁ]+[\s]+[a-zA-Zа-яА-ЯёЁ]+[\s]+[a-zA-Zа-яА-ЯёЁ]+$/ -->
     <template v-else>
       <ValidationProvider
         class="form-group"
         tag="div"
         name="ФИО"
-        :rules="{ fullName: /^[aA-zZа-яА-ЯёЁ]+[\s]+[aA-zZа-яА-ЯёЁ]+[\s]+[aA-zZа-яА-ЯёЁ]+$/ }"
+        :rules="{
+          fullName: /^[a-zA-Zа-яА-ЯёЁ]+ [a-zA-Zа-яА-ЯёЁ]+ [a-zA-Zа-яА-ЯёЁ]+$/,
+        }"
         v-slot="{ errors, classes }"
       >
         <label>
