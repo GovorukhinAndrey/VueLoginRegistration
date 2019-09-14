@@ -351,14 +351,9 @@ export default {
     },
     formReset() {
       this.form.email = null;
-      this.form.lastName = null;
-      this.form.name = null;
-      this.form.secondName = null;
       this.form.phone = null;
       this.form.password = null;
-      this.login.password = null;
       this.fullName = null;
-      this.confirm = null;
       requestAnimationFrame(() => {
         this.$refs.observer.reset();
       });
