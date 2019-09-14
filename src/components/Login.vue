@@ -1,6 +1,13 @@
 <template>
-  <ValidationObserver ref="observer" v-slot="{ valid }" tag="form" @submit.prevent="onSubmit">
+  <ValidationObserver
+    ref="observer"
+    v-slot="{ valid }"
+    tag="form"
+    class="authorisation"
+    @submit.prevent="onSubmit"
+  >
     <h2 class="title">{{ getTitle }}</h2>
+    <!-- email -->
     <ValidationProvider
       tag="div"
       class="form-group"
@@ -10,102 +17,21 @@
     >
       <label class="email-group" :class="classes">
         <span class="form-group__title">Email</span>
-        <input placeholder="email@mail.com" :class="classes" v-model="form.email" type="email" />
+        <input
+          placeholder="email@mail.com"
+          class="form-group__input"
+          :class="classes"
+          v-model="form.email"
+          type="email"
+        />
       </label>
       <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
       <span class="form-group__text-done" v-if="!registraton && !invalid && recovery === false">
         Здравствуйте! Вы уже зарегистрированы.
       </span>
     </ValidationProvider>
-    <!-- Поля для регистрации -->
-    <template v-if="registraton">
-      <ValidationProvider
-        class="form-group"
-        tag="div"
-        name="ФИО"
-        :rules="{ fullName: /^[aA-zZа-яА-ЯёЁ]+[\s]+[aA-zZа-яА-ЯёЁ]+[\s]+[aA-zZа-яА-ЯёЁ]+$/ }"
-        v-slot="{ errors, classes }"
-      >
-        <label>
-          <span
-            class="form-group__title question"
-            content="Служба доставки выдаст заказ по паспорту"
-            v-tippy
-          >
-            ФИО
-          </span>
-          <input
-            :class="classes"
-            v-model="fullName"
-            type="text"
-            :placeholder="placeholderFullName"
-          />
-          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
-        </label>
-      </ValidationProvider>
-
-      <ValidationProvider
-        class="form-group"
-        tag="div"
-        name="Телефон"
-        :rules="{ telephone: 10 }"
-        v-slot="{ errors, classes }"
-      >
-        <label>
-          <span class="form-group__title">Телефон</span>
-          <input
-            placeholder="Введите номер телефона"
-            :class="classes"
-            type="tel"
-            v-model="form.phone"
-          />
-          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
-        </label>
-      </ValidationProvider>
-      <!-- пароль для регистрации-->
-      <!-- <ValidationObserver> -->
-      <ValidationProvider
-        class="form-group"
-        name="password"
-        tag="div"
-        rules="required|password:confirmation"
-        v-slot="{ errors, classes }"
-      >
-        <label>
-          <span class="form-group__title">Введите пароль</span>
-          <input
-            placeholder="Пароль регистрации"
-            :class="classes"
-            v-model="form.password"
-            type="password"
-          />
-          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
-        </label>
-      </ValidationProvider>
-
-      <ValidationProvider
-        class="form-group"
-        tag="div"
-        name="confirmation"
-        rules="required"
-        v-slot="{ errors, classes }"
-      >
-        <label>
-          <span class="form-group__title">Подтверждение пароля</span>
-          <input
-            placeholder="Повторите пароль"
-            :class="classes"
-            v-model="confirm"
-            type="password"
-          />
-          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
-        </label>
-      </ValidationProvider>
-      <!-- </ValidationObserver> -->
-      <button :disabled="!valid" @click.prevent="onSubmit" type="submit">Регистрация</button>
-    </template>
     <!-- Поля для входа -->
-    <template v-else-if="!registraton && recovery === false">
+    <template v-if="!registraton && recovery === false">
       <ValidationProvider
         class="form-group"
         tag="div"
@@ -133,6 +59,7 @@
           </span>
           <input
             :class="classes"
+            class="form-group__input"
             placeholder="Введите пароль"
             v-model="login.password"
             :type="passwordFieldType"
@@ -140,16 +67,116 @@
           <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
         </label>
       </ValidationProvider>
+
+      <div class="form-group">
+        <label class="checkbox">
+          <input v-model="checkbox" type="checkbox" />
+          <div class="checkbox__text">Запоминать авторизацию?</div>
+        </label>
+      </div>
+
       <a href="#" @click.prevent="recovery = true" class="link">Забыли пароль?</a>
 
-      <button :disabled="!valid" @click.prevent="onSubmit" type="submit">Вход</button>
+      <button :disabled="!valid" class="button" type="submit">
+        Вход
+      </button>
     </template>
     <!-- восстановление пароля -->
     <template v-else-if="!registraton && recovery === true">
       <a href="#" @click.prevent="recovery = false" class="link">Вернуться к автризации</a>
 
-      <button :disabled="!valid" @click.prevent="onSubmit" type="submit">
+      <button :disabled="!valid" class="button" @click.prevent="onSubmit" type="submit">
         Отправить пароль на email
+      </button>
+    </template>
+    <!-- Поля для регистрации -->
+    <template v-else>
+      <ValidationProvider
+        class="form-group"
+        tag="div"
+        name="ФИО"
+        :rules="{ fullName: /^[aA-zZа-яА-ЯёЁ]+[\s]+[aA-zZа-яА-ЯёЁ]+[\s]+[aA-zZа-яА-ЯёЁ]+$/ }"
+        v-slot="{ errors, classes }"
+      >
+        <label>
+          <span
+            class="form-group__title question"
+            content="Служба доставки выдаст заказ по паспорту"
+            v-tippy
+          >
+            ФИО
+          </span>
+          <span class="form-group__placeholder">
+            <span class="form-group__placeholder-input" v-html="placholderFullName"></span>
+            <input :class="classes" class="form-group__input" v-model="fullName" type="text" />
+          </span>
+          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
+        </label>
+      </ValidationProvider>
+
+      <ValidationProvider
+        class="form-group"
+        tag="div"
+        name="Телефон"
+        :rules="{ telephone: 10 }"
+        v-slot="{ errors, classes }"
+      >
+        <label>
+          <span class="form-group__title">Телефон</span>
+          <input
+            placeholder="Введите номер телефона"
+            :class="classes"
+            class="form-group__input"
+            type="tel"
+            v-model="form.phone"
+          />
+          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
+        </label>
+      </ValidationProvider>
+      <!-- пароль для регистрации-->
+      <!-- <ValidationObserver> -->
+      <ValidationProvider
+        class="form-group"
+        name="password"
+        tag="div"
+        rules="required|password:confirmation"
+        v-slot="{ errors, classes }"
+      >
+        <label>
+          <span class="form-group__title">Введите пароль</span>
+          <input
+            placeholder="Пароль регистрации"
+            :class="classes"
+            class="form-group__input"
+            v-model="form.password"
+            type="password"
+          />
+          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
+        </label>
+      </ValidationProvider>
+
+      <ValidationProvider
+        class="form-group"
+        tag="div"
+        name="confirmation"
+        rules="required"
+        v-slot="{ errors, classes }"
+      >
+        <label>
+          <span class="form-group__title">Подтверждение пароля</span>
+          <input
+            placeholder="Повторите пароль"
+            :class="classes"
+            class="form-group__input"
+            v-model="confirm"
+            type="password"
+          />
+          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
+        </label>
+      </ValidationProvider>
+      <!-- </ValidationObserver> -->
+      <button :disabled="!valid" class="button" type="submit">
+        Регистрация
       </button>
     </template>
   </ValidationObserver>
@@ -197,13 +224,17 @@ export default {
   },
   name: 'login',
   data: () => ({
-    value: null,
+    checkbox: true,
     registraton: true,
     recovery: false,
     confirm: null,
     passwordFieldType: 'password',
     fullName: null,
-    placeholderFullName: 'Фамилия Имя Отчество',
+    placeholder: {
+      name: 'Имя',
+      lastName: 'Фамилия',
+      secondName: 'Отчество',
+    },
     form: {
       email: null,
       lastName: null,
@@ -214,51 +245,52 @@ export default {
     },
     login: {
       password: null,
-      remeber: 'Y',
+      // remeber: 'Y',
     },
   }),
   mounted() {},
   watch: {
-    'form.email': function() {
+    'form.email'() {
       this.validateEmail(this.form.email, 'required|email');
+    },
+    fullName() {
+      let arrFullName = this.fullName.split(' ');
+
+      this.setFieldsName(arrFullName);
+      this.setPlacholderFullName(arrFullName);
     },
   },
   computed: {
-    getTitle: function() {
-      let title = 'Регистрация';
-      if (this.registraton) {
-        title = 'Регистрация';
-      } else if (!this.registraton && this.recovery === false) {
-        title = 'Вход';
-      } else if (!this.registraton && this.recovery === true) {
-        title = 'Восстановление пароля';
-      }
-      return title;
+    remember() {
+      return this.checkbox ? 'Y' : 'N';
     },
-    fieldsName: function() {
-      let arrFullName = this.fullName.split(' ');
-      this.getFieldsName(arrFullName);
-      let result = this.fullName ? arrFullName : [];
-      this.setPlacholderFullName(result);
-      return result;
+    getTitle() {
+      const login = !this.registraton && this.recovery === false;
+      const recovery = !this.registraton && this.recovery === true;
+      return login ? 'Вход' : recovery ? 'Восстановление пароля' : 'Регистрация';
+    },
+    placholderFullName() {
+      return `${this.placeholder.lastName} ${this.placeholder.name} ${this.placeholder.secondName}`;
     },
   },
   methods: {
     setPlacholderFullName(arrFullName) {
-      if (arrFullName.length === 0) {
-        this.placeholderFullName = 'Фамилия Имя Отчество';
-      } else if (arrFullName.length === 1) {
-        this.placeholderFullName = ' Имя Отчество';
-      } else if (arrFullName.length === 2) {
-        this.placeholderFullName = ' Отчество';
-      } else {
-        this.placeholderFullName = 'Фамилия Имя Отчество';
-      }
+      let name = arrFullName[1];
+      let lastName = arrFullName[0];
+      let secondName = arrFullName[2];
+
+      this.placeholder.lastName = lastName
+        ? `<span class="transparent">${lastName}</span>`
+        : 'Фамилия';
+      this.placeholder.name = name ? `<span class="transparent">${name}</span>` : 'Имя';
+      this.placeholder.secondName = secondName
+        ? `<span class="transparent">${secondName}</span>`
+        : 'Отчество';
     },
-    getFieldsName(fullName) {
-      this.form.lastName = fullName[0];
-      this.form.name = fullName[1];
-      this.form.secondName = fullName[2];
+    setFieldsName(fullName) {
+      this.form.lastName = fullName[0] ? fullName[0] : null;
+      this.form.name = fullName[1] ? fullName[1] : null;
+      this.form.secondName = fullName[2] ? fullName[2] : null;
     },
     validateEmail(value, rules) {
       validate(value, rules).then(result => {
@@ -290,13 +322,13 @@ export default {
         });
     },
     onSubmit() {
-      if (this.registraton) {
-        this.userRegistration();
-      } else if (!this.registraton && this.recovery === false) {
-        this.userLogin();
-      } else if (!this.registraton && this.recovery === true) {
-        this.passwordRecovery();
-      }
+      const login = !this.registraton && this.recovery === false;
+      const recovery = !this.registraton && this.recovery === true;
+      return login
+        ? this.userLogin()
+        : recovery
+        ? this.passwordRecovery()
+        : this.userRegistration();
     },
     passwordRecovery() {
       axios
@@ -322,15 +354,15 @@ export default {
     },
     userLogin() {
       axios
-        .get('/user/', {
+        .post('/user-session/', {
           LOGIN: this.form.email,
           PASSWORD: this.login.password,
-          REMEMBER: this.login.remeber,
+          REMEMBER: this.remember,
         })
         .then(response => {
           console.log(response.data);
           this.$swal('Пользователь авторизован', {
-            text: `Пользователь с ID = "${response.data.DATA.USER_ID}" авторизован`,
+            text: `Пользователь с ID = "${response.data.DATA.USER.ID}" авторизован`,
             icon: 'success',
           });
           this.formReset();
@@ -390,14 +422,49 @@ export default {
 };
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
+.checkbox
+  position: relative
+  display: block
+  input
+    position: absolute
+    z-index: -1
+    opacity: 0
+    transition: $tr
+    &:checked + .checkbox__text::after
+      opacity: 1
+  &__text
+    position: relative
+    transition: $tr
+    padding:
+      left: 25px
+    &::before
+      content: ''
+      position: absolute
+      left: 0
+      top: 3px
+      width: 16px
+      height: 16px
+      cursor: pointer
+      background-color: #e1e1e1
+    &::after
+      content: "\f00c"
+      font-family: FontAwesome
+      position: absolute
+      left: 1px
+      top: 3px
+      font-size: 13px
+      line-height: 16px
+      transition: $tr
+      opacity: 0
+      cursor: pointer
 .question
   &::after
     content: "\F29C"
     font-family: FontAwesome
     font-weight: normal
     color: #b9b9b9
-form
+.authorisation
   display: block
   width: 100%
   max-width: 425px
@@ -407,6 +474,27 @@ form
 .form-group
   margin-bottom: 15px
   text-align: left
+  position: relative
+  &__placeholder
+    position: relative
+    display: block
+    input
+      background-color: transparent
+      position: absolute
+      bottom: 0
+    &-input
+      line-height: 1.15
+      border: 1px solid transparent
+      color: #a6a6a6
+      cursor: text
+      border-radius: 3px
+      display: block
+      padding: 10px
+      width: 100%
+      margin-top: 10px
+      &::selection
+        background-color: transparent
+        color: #a6a6a6
   &__title
     font-weight: bold
     display: inline
@@ -425,34 +513,18 @@ form
     justify-content: space-between
   &__show-pass-btn
     cursor: pointer
-.email-group
-  display: block
-  position: relative
-  input
-    padding-right: 35px
-  &.valid
-    &::before
-      content: '\f058'
-      font-family: FontAwesome
-      font-size: 22px
-      display: block
-      position: absolute
-      border-radius: 50%
-      color: $valid
-      right: 10px
-      bottom: 3.5px
-input
-  border: 1px solid #c8cbd6
-  border-radius: 3px
-  display: block
-  padding: 10px
-  width: 100%
-  margin-top: 10px
-  &.valid
-    border: 1px solid $valid
-  &.invalid
-    border: 1px solid $invalid
-button
+  &__input
+    border: 1px solid #c8cbd6
+    border-radius: 3px
+    display: block
+    padding: 10px
+    width: 100%
+    margin-top: 10px
+    &.valid
+      border: 1px solid $valid
+    &.invalid
+      border: 1px solid $invalid
+.button
   color: #ffffff
   background-color: $enabled
   border-radius: 3px
@@ -470,4 +542,20 @@ button
     &:hover
       background-color: $disabled
       cursor: default
+.email-group
+  display: block
+  position: relative
+  input
+    padding-right: 35px
+  &.valid
+    &::before
+      content: '\f058'
+      font-family: FontAwesome
+      font-size: 22px
+      display: block
+      position: absolute
+      border-radius: 50%
+      color: $valid
+      right: 10px
+      bottom: 3.5px
 </style>
