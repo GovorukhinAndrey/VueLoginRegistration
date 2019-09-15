@@ -183,13 +183,7 @@ export default {
     'form.email'() {
       this.validateEmail(this.form.email, 'required|email');
     },
-    fullName() {
-      let fullName = this.fullName;
-      let arrFullName = this.fullName ? fullName.split(' ') : [];
-
-      this.setFieldsName(arrFullName);
-      this.checkPlaceholder(arrFullName);
-    },
+    fullName: 'watchingFullName',
   },
   computed: {
     remember() {
@@ -205,6 +199,13 @@ export default {
     },
   },
   methods: {
+    watchingFullName() {
+      let fullName = this.fullName;
+      let arrFullName = this.fullName ? fullName.split(' ') : [];
+
+      this.setFieldsName(arrFullName);
+      this.checkPlaceholder(arrFullName);
+    },
     checkPlaceholder(arrFullName) {
       let checkUp = arrFullName.filter((el, index) => {
         return el === '' && !(index === arrFullName.length - 1);
