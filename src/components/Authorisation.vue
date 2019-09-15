@@ -79,9 +79,7 @@
       <a href="#" @click.prevent="recovery = true" class="link">Забыли пароль?</a>
     </template>
     <!-- восстановление пароля -->
-    <template v-else-if="conditionRecovery">
-      <a href="#" @click.prevent="recovery = false" class="link">Вернуться к автризации</a>
-    </template>
+    <Recovery v-else-if="conditionRecovery" @move-on-login="recovery = false"></Recovery>
     <!-- Поля для регистрации -->
     <template v-else>
       <ValidationProvider
@@ -146,11 +144,13 @@ import axios from '@/axios.js';
 import { ValidationObserver, ValidationProvider } from 'vee-validate';
 import { validate } from 'vee-validate';
 import '@/vue-validate.js';
+const Recovery = () => import('@/components/authorisation/Recovery.vue');
 
 export default {
   components: {
     ValidationProvider,
     ValidationObserver,
+    Recovery,
   },
   name: 'Authorisation',
   data: () => ({
