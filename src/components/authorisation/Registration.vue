@@ -7,7 +7,7 @@
       :rules="{
         fullName: /^[a-zA-Zа-яА-ЯёЁ]+ [a-zA-Zа-яА-ЯёЁ]+ [a-zA-Zа-яА-ЯёЁ]+$/,
       }"
-      v-slot="{ errors, classes }"
+      v-slot="{ errors, classes, validate }"
     >
       <label for="fullName" class="form-group__title">
         ФИО
@@ -23,7 +23,11 @@
           id="fullName"
           :class="classes"
           class="form-group__input"
-          v-model="fullName"
+          :value="fullName"
+          @input="
+            fullName = $event.target.value;
+            validate($event);
+          "
           type="text"
         />
       </span>
