@@ -400,6 +400,7 @@ export default {
       opacity: 0
       cursor: pointer
 .question
+  cursor: pointer
   &::after
     content: "\F29C"
     font-family: FontAwesome
