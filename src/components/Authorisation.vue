@@ -218,11 +218,7 @@ export default {
         this.setPlacholderFullName(arrFullName);
       }
     },
-    setPlacholderFullName(arrFullName) {
-      let name = arrFullName[1];
-      let lastName = arrFullName[0];
-      let secondName = arrFullName[2];
-
+    setPlacholderFullName([lastName, name, secondName]) {
       this.placeholder.lastName = lastName
         ? `<span class="transparent">${lastName}</span>`
         : 'Фамилия';
@@ -231,10 +227,10 @@ export default {
         ? `<span class="transparent">${secondName}</span>`
         : 'Отчество';
     },
-    setFieldsName(fullName) {
-      this.form.lastName = fullName[0] ? fullName[0] : null;
-      this.form.name = fullName[1] ? fullName[1] : null;
-      this.form.secondName = fullName[2] ? fullName[2] : null;
+    setFieldsName([lastName = null, name = null, secondName = null]) {
+      this.form.lastName = lastName;
+      this.form.name = name;
+      this.form.secondName = secondName;
     },
     validateEmail(value, rules) {
       validate(value, rules).then(result => {
