@@ -39,33 +39,34 @@
         v-slot="{ errors, classes }"
         key="loginPass"
       >
-        <label>
-          <span class="form-group__show-pass-wrapper">
-            <span class="form-group__title">Введите пароль</span>
-            <span
-              @click="switchVisibility"
-              v-if="passwordFieldType === 'password'"
-              class="form-group__show-pass-btn"
-            >
-              <i class="fa fa-eye" aria-hidden="true"></i> Показать пароль
-            </span>
-            <span
-              @click="switchVisibility"
-              v-else-if="passwordFieldType === 'text'"
-              class="form-group__show-pass-btn"
-            >
-              <i class="fa fa-eye-slash" aria-hidden="true"></i> Скрыть пароль
-            </span>
+        <span class="form-group__show-pass-wrapper">
+          <label for="password" class="form-group__title">
+            Введите пароль
+          </label>
+          <span
+            @click="switchVisibility"
+            v-if="passwordFieldType === 'password'"
+            class="form-group__show-pass-btn"
+          >
+            <i class="fa fa-eye" aria-hidden="true"></i> Показать пароль
           </span>
-          <input
-            :class="classes"
-            class="form-group__input"
-            placeholder="Введите пароль"
-            v-model="form.password"
-            :type="passwordFieldType"
-          />
-          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
-        </label>
+          <span
+            @click="switchVisibility"
+            v-else-if="passwordFieldType === 'text'"
+            class="form-group__show-pass-btn"
+          >
+            <i class="fa fa-eye-slash" aria-hidden="true"></i> Скрыть пароль
+          </span>
+        </span>
+        <input
+          id="password"
+          :class="classes"
+          class="form-group__input"
+          placeholder="Введите пароль"
+          v-model="form.password"
+          :type="passwordFieldType"
+        />
+        <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
       </ValidationProvider>
 
       <div class="form-group">
@@ -100,20 +101,21 @@
         }"
         v-slot="{ errors, classes }"
       >
-        <label>
-          <span
-            class="form-group__title question"
-            content="Служба доставки выдаст заказ по паспорту"
-            v-tippy
-          >
-            ФИО
-          </span>
-          <span class="form-group__placeholder">
-            <span class="form-group__placeholder-input" v-html="placholderFullName"></span>
-            <input :class="classes" class="form-group__input" v-model="fullName" type="text" />
-          </span>
-          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
+        <label for="fullName" class="form-group__title">
+          ФИО
         </label>
+        <span class="question" content="Служба доставки выдаст заказ по паспорту" v-tippy></span>
+        <span class="form-group__placeholder">
+          <span class="form-group__placeholder-input" v-html="placholderFullName"></span>
+          <input
+            id="fullName"
+            :class="classes"
+            class="form-group__input"
+            v-model="fullName"
+            type="text"
+          />
+        </span>
+        <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
       </ValidationProvider>
 
       <ValidationProvider
@@ -123,17 +125,18 @@
         :rules="{ telephone: 10 }"
         v-slot="{ errors, classes }"
       >
-        <label>
-          <span class="form-group__title">Телефон</span>
-          <input
-            placeholder="Введите номер телефона"
-            :class="classes"
-            class="form-group__input"
-            type="tel"
-            v-model="form.phone"
-          />
-          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
+        <label for="phone" class="form-group__title">
+          Телефон
         </label>
+        <input
+          id="phone"
+          placeholder="Введите номер телефона"
+          :class="classes"
+          class="form-group__input"
+          type="tel"
+          v-model="form.phone"
+        />
+        <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
       </ValidationProvider>
 
       <button :disabled="!valid" class="button" type="submit">
