@@ -157,7 +157,7 @@ export default {
     ValidationProvider,
     ValidationObserver,
   },
-  name: 'login',
+  name: 'Authorisation',
   data: () => ({
     checkbox: true,
     registraton: true,
