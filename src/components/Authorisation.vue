@@ -6,7 +6,7 @@
     class="authorisation"
     @submit.prevent="onSubmit"
   >
-    <h2 class="title">{{ getTitle }}</h2>
+    <h2 class="title">{{ title }}</h2>
     <!-- email -->
     <ValidationProvider
       tag="div"
@@ -31,7 +31,7 @@
       </span>
     </ValidationProvider>
     <!-- Поля для входа -->
-    <template v-if="!registraton && recovery === false">
+    <template v-if="conditionLogin">
       <ValidationProvider
         class="form-group"
         tag="div"
@@ -77,18 +77,10 @@
       </div>
 
       <a href="#" @click.prevent="recovery = true" class="link">Забыли пароль?</a>
-
-      <button :disabled="!valid" class="button" type="submit">
-        Вход
-      </button>
     </template>
     <!-- восстановление пароля -->
-    <template v-else-if="!registraton && recovery === true">
+    <template v-else-if="conditionRecovery">
       <a href="#" @click.prevent="recovery = false" class="link">Вернуться к автризации</a>
-
-      <button :disabled="!valid" class="button" @click.prevent="onSubmit" type="submit">
-        Отправить пароль на email
-      </button>
     </template>
     <!-- Поля для регистрации -->
     <template v-else>
@@ -142,11 +134,10 @@
         />
         <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
       </ValidationProvider>
-
-      <button :disabled="!valid" class="button" type="submit">
-        Регистрация
-      </button>
     </template>
+    <button :disabled="!valid" class="button" type="submit">
+      {{ buttonText }}
+    </button>
   </ValidationObserver>
 </template>
 
@@ -193,10 +184,25 @@ export default {
     remember() {
       return this.checkbox ? 'Y' : 'N';
     },
-    getTitle() {
-      const login = !this.registraton && this.recovery === false;
-      const recovery = !this.registraton && this.recovery === true;
-      return login ? 'Вход' : recovery ? 'Восстановление пароля' : 'Регистрация';
+    conditionLogin() {
+      return !this.registraton && this.recovery === false;
+    },
+    conditionRecovery() {
+      return !this.registraton && this.recovery === true;
+    },
+    title() {
+      return this.conditionLogin
+        ? 'Вход'
+        : this.conditionRecovery
+        ? 'Восстановление пароля'
+        : 'Регистрация';
+    },
+    buttonText() {
+      return this.conditionLogin
+        ? 'Вход'
+        : this.conditionRecovery
+        ? 'Отправить пароль на Email'
+        : 'Регистрация';
     },
     placholderFullName() {
       return `${this.placeholder.lastName} ${this.placeholder.name} ${this.placeholder.secondName}`;
@@ -267,11 +273,9 @@ export default {
         });
     },
     onSubmit() {
-      const login = !this.registraton && this.recovery === false;
-      const recovery = !this.registraton && this.recovery === true;
-      return login
+      return this.conditionLogin
         ? this.userLogin()
-        : recovery
+        : this.conditionRecovery
         ? this.passwordRecovery()
         : this.userRegistration();
     },
