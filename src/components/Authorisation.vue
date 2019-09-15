@@ -104,7 +104,11 @@
         <label for="fullName" class="form-group__title">
           ФИО
         </label>
-        <span class="question" content="Служба доставки выдаст заказ по паспорту" v-tippy></span>
+        <span
+          class="question"
+          content="Служба доставки выдаст заказ по паспорту"
+          v-tippy="{ trigger: 'click' }"
+        ></span>
         <span class="form-group__placeholder">
           <span class="form-group__placeholder-input" v-html="placholderFullName"></span>
           <input
