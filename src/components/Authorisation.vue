@@ -6,7 +6,7 @@
     class="authorisation"
     @submit.prevent="onSubmit"
   >
-    <h2 class="title">{{ getTitle }}</h2>
+    <h2 class="title">{{ title }}</h2>
     <!-- email -->
     <ValidationProvider
       tag="div"
@@ -31,7 +31,7 @@
       </span>
     </ValidationProvider>
     <!-- Поля для входа -->
-    <template v-if="!registraton && recovery === false">
+    <template v-if="conditionLogin">
       <ValidationProvider
         class="form-group"
         tag="div"
@@ -39,33 +39,34 @@
         v-slot="{ errors, classes }"
         key="loginPass"
       >
-        <label>
-          <span class="form-group__show-pass-wrapper">
-            <span class="form-group__title">Введите пароль</span>
-            <span
-              @click="switchVisibility"
-              v-if="passwordFieldType === 'password'"
-              class="form-group__show-pass-btn"
-            >
-              <i class="fa fa-eye" aria-hidden="true"></i> Показать пароль
-            </span>
-            <span
-              @click="switchVisibility"
-              v-else-if="passwordFieldType === 'text'"
-              class="form-group__show-pass-btn"
-            >
-              <i class="fa fa-eye-slash" aria-hidden="true"></i> Скрыть пароль
-            </span>
+        <span class="form-group__show-pass-wrapper">
+          <label for="password" class="form-group__title">
+            Введите пароль
+          </label>
+          <span
+            @click="switchVisibility"
+            v-if="passwordFieldType === 'password'"
+            class="form-group__show-pass-btn"
+          >
+            <i class="fa fa-eye" aria-hidden="true"></i> Показать пароль
           </span>
-          <input
-            :class="classes"
-            class="form-group__input"
-            placeholder="Введите пароль"
-            v-model="form.password"
-            :type="passwordFieldType"
-          />
-          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
-        </label>
+          <span
+            @click="switchVisibility"
+            v-else-if="passwordFieldType === 'text'"
+            class="form-group__show-pass-btn"
+          >
+            <i class="fa fa-eye-slash" aria-hidden="true"></i> Скрыть пароль
+          </span>
+        </span>
+        <input
+          id="password"
+          :class="classes"
+          class="form-group__input"
+          placeholder="Введите пароль"
+          v-model="form.password"
+          :type="passwordFieldType"
+        />
+        <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
       </ValidationProvider>
 
       <div class="form-group">
@@ -76,19 +77,9 @@
       </div>
 
       <a href="#" @click.prevent="recovery = true" class="link">Забыли пароль?</a>
-
-      <button :disabled="!valid" class="button" type="submit">
-        Вход
-      </button>
     </template>
     <!-- восстановление пароля -->
-    <template v-else-if="!registraton && recovery === true">
-      <a href="#" @click.prevent="recovery = false" class="link">Вернуться к автризации</a>
-
-      <button :disabled="!valid" class="button" @click.prevent="onSubmit" type="submit">
-        Отправить пароль на email
-      </button>
-    </template>
+    <Recovery v-else-if="conditionRecovery" @move-on-login="recovery = false"></Recovery>
     <!-- Поля для регистрации -->
     <template v-else>
       <ValidationProvider
@@ -100,20 +91,25 @@
         }"
         v-slot="{ errors, classes }"
       >
-        <label>
-          <span
-            class="form-group__title question"
-            content="Служба доставки выдаст заказ по паспорту"
-            v-tippy
-          >
-            ФИО
-          </span>
-          <span class="form-group__placeholder">
-            <span class="form-group__placeholder-input" v-html="placholderFullName"></span>
-            <input :class="classes" class="form-group__input" v-model="fullName" type="text" />
-          </span>
-          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
+        <label for="fullName" class="form-group__title">
+          ФИО
         </label>
+        <span
+          class="question"
+          content="Служба доставки выдаст заказ по паспорту"
+          v-tippy="{ trigger: 'click' }"
+        ></span>
+        <span class="form-group__placeholder">
+          <span class="form-group__placeholder-input" v-html="placholderFullName"></span>
+          <input
+            id="fullName"
+            :class="classes"
+            class="form-group__input"
+            v-model="fullName"
+            type="text"
+          />
+        </span>
+        <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
       </ValidationProvider>
 
       <ValidationProvider
@@ -123,23 +119,23 @@
         :rules="{ telephone: 10 }"
         v-slot="{ errors, classes }"
       >
-        <label>
-          <span class="form-group__title">Телефон</span>
-          <input
-            placeholder="Введите номер телефона"
-            :class="classes"
-            class="form-group__input"
-            type="tel"
-            v-model="form.phone"
-          />
-          <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
+        <label for="phone" class="form-group__title">
+          Телефон
         </label>
+        <input
+          id="phone"
+          placeholder="Введите номер телефона"
+          :class="classes"
+          class="form-group__input"
+          type="tel"
+          v-model="form.phone"
+        />
+        <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
       </ValidationProvider>
-
-      <button :disabled="!valid" class="button" type="submit">
-        Регистрация
-      </button>
     </template>
+    <button :disabled="!valid" class="button" type="submit">
+      {{ buttonText }}
+    </button>
   </ValidationObserver>
 </template>
 
@@ -148,13 +144,15 @@ import axios from '@/axios.js';
 import { ValidationObserver, ValidationProvider } from 'vee-validate';
 import { validate } from 'vee-validate';
 import '@/vue-validate.js';
+const Recovery = () => import('@/components/authorisation/Recovery.vue');
 
 export default {
   components: {
     ValidationProvider,
     ValidationObserver,
+    Recovery,
   },
-  name: 'login',
+  name: 'Authorisation',
   data: () => ({
     checkbox: true,
     registraton: true,
@@ -180,28 +178,44 @@ export default {
     'form.email'() {
       this.validateEmail(this.form.email, 'required|email');
     },
-    fullName() {
-      let fullName = this.fullName;
-      let arrFullName = this.fullName ? fullName.split(' ') : [];
-
-      this.setFieldsName(arrFullName);
-      this.checkPlaceholder(arrFullName);
-    },
+    fullName: 'watchingFullName',
   },
   computed: {
     remember() {
       return this.checkbox ? 'Y' : 'N';
     },
-    getTitle() {
-      const login = !this.registraton && this.recovery === false;
-      const recovery = !this.registraton && this.recovery === true;
-      return login ? 'Вход' : recovery ? 'Восстановление пароля' : 'Регистрация';
+    conditionLogin() {
+      return !this.registraton && this.recovery === false;
+    },
+    conditionRecovery() {
+      return !this.registraton && this.recovery === true;
+    },
+    title() {
+      return this.conditionLogin
+        ? 'Вход'
+        : this.conditionRecovery
+        ? 'Восстановление пароля'
+        : 'Регистрация';
+    },
+    buttonText() {
+      return this.conditionLogin
+        ? 'Вход'
+        : this.conditionRecovery
+        ? 'Отправить пароль на Email'
+        : 'Регистрация';
     },
     placholderFullName() {
       return `${this.placeholder.lastName} ${this.placeholder.name} ${this.placeholder.secondName}`;
     },
   },
   methods: {
+    watchingFullName() {
+      let fullName = this.fullName;
+      let arrFullName = this.fullName ? fullName.split(' ') : [];
+
+      this.setFieldsName(arrFullName);
+      this.checkPlaceholder(arrFullName);
+    },
     checkPlaceholder(arrFullName) {
       let checkUp = arrFullName.filter((el, index) => {
         return el === '' && !(index === arrFullName.length - 1);
@@ -215,11 +229,7 @@ export default {
         this.setPlacholderFullName(arrFullName);
       }
     },
-    setPlacholderFullName(arrFullName) {
-      let name = arrFullName[1];
-      let lastName = arrFullName[0];
-      let secondName = arrFullName[2];
-
+    setPlacholderFullName([lastName, name, secondName]) {
       this.placeholder.lastName = lastName
         ? `<span class="transparent">${lastName}</span>`
         : 'Фамилия';
@@ -228,10 +238,10 @@ export default {
         ? `<span class="transparent">${secondName}</span>`
         : 'Отчество';
     },
-    setFieldsName(fullName) {
-      this.form.lastName = fullName[0] ? fullName[0] : null;
-      this.form.name = fullName[1] ? fullName[1] : null;
-      this.form.secondName = fullName[2] ? fullName[2] : null;
+    setFieldsName([lastName = null, name = null, secondName = null]) {
+      this.form.lastName = lastName;
+      this.form.name = name;
+      this.form.secondName = secondName;
     },
     validateEmail(value, rules) {
       validate(value, rules).then(result => {
@@ -263,11 +273,9 @@ export default {
         });
     },
     onSubmit() {
-      const login = !this.registraton && this.recovery === false;
-      const recovery = !this.registraton && this.recovery === true;
-      return login
+      return this.conditionLogin
         ? this.userLogin()
-        : recovery
+        : this.conditionRecovery
         ? this.passwordRecovery()
         : this.userRegistration();
     },
@@ -400,6 +408,7 @@ export default {
       opacity: 0
       cursor: pointer
 .question
+  cursor: pointer
   &::after
     content: "\F29C"
     font-family: FontAwesome
