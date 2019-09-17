@@ -31,53 +31,12 @@
       </span>
     </ValidationProvider>
     <!-- Поля для входа -->
-    <template v-if="conditionLogin">
-      <ValidationProvider
-        class="form-group"
-        tag="div"
-        rules="required"
-        v-slot="{ errors, classes }"
-        key="loginPass"
-      >
-        <span class="form-group__show-pass-wrapper">
-          <label for="password" class="form-group__title">
-            Введите пароль
-          </label>
-          <span
-            @click="switchVisibility"
-            v-if="passwordFieldType === 'password'"
-            class="form-group__show-pass-btn"
-          >
-            <i class="fa fa-eye" aria-hidden="true"></i> Показать пароль
-          </span>
-          <span
-            @click="switchVisibility"
-            v-else-if="passwordFieldType === 'text'"
-            class="form-group__show-pass-btn"
-          >
-            <i class="fa fa-eye-slash" aria-hidden="true"></i> Скрыть пароль
-          </span>
-        </span>
-        <input
-          id="password"
-          :class="classes"
-          class="form-group__input"
-          placeholder="Введите пароль"
-          v-model="form.password"
-          :type="passwordFieldType"
-        />
-        <span v-if="errors[0]" class="form-group__error">{{ errors[0] }}</span>
-      </ValidationProvider>
-
-      <div class="form-group">
-        <label class="checkbox">
-          <input v-model="checkbox" type="checkbox" />
-          <div class="checkbox__text">Запоминать авторизацию?</div>
-        </label>
-      </div>
-
-      <a href="#" @click.prevent="recovery = true" class="link">Забыли пароль?</a>
-    </template>
+    <Login
+      :reset="reset"
+      @login-value="loginValues"
+      v-if="conditionLogin"
+      @move-on-recovery="recovery = true"
+    ></Login>
     <!-- восстановление пароля -->
     <Recovery v-else-if="conditionRecovery" @move-on-login="recovery = false"></Recovery>
     <!-- Поля для регистрации -->
@@ -95,6 +54,7 @@ import { validate } from 'vee-validate';
 import '@/vue-validate.js';
 const Recovery = () => import('@/components/authorisation/Recovery.vue');
 const Registration = () => import('@/components/authorisation/Registration.vue');
+const Login = () => import('@/components/authorisation/Login.vue');
 
 export default {
   components: {
@@ -102,14 +62,13 @@ export default {
     ValidationObserver,
     Recovery,
     Registration,
+    Login,
   },
   name: 'Authorisation',
   data: () => ({
-    checkbox: true,
     registraton: true,
     recovery: false,
     reset: false,
-    passwordFieldType: 'password',
     form: {
       email: null,
       lastName: null,
@@ -117,6 +76,7 @@ export default {
       secondName: null,
       phone: null,
       password: null,
+      remember: 'Y',
     },
   }),
   mounted() {},
@@ -126,9 +86,6 @@ export default {
     },
   },
   computed: {
-    remember() {
-      return this.checkbox ? 'Y' : 'N';
-    },
     conditionLogin() {
       return !this.registraton && this.recovery === false;
     },
@@ -156,6 +113,10 @@ export default {
       this.form.name = value.name;
       this.form.secondName = value.secondName;
       this.form.phone = value.phone;
+    },
+    loginValues(value) {
+      this.form.password = value.password;
+      this.form.remember = value.remember;
     },
     validateEmail(value, rules) {
       validate(value, rules).then(result => {
@@ -220,7 +181,7 @@ export default {
         .post('/user-session/', {
           LOGIN: this.form.email,
           PASSWORD: this.form.password,
-          REMEMBER: this.remember,
+          REMEMBER: this.form.remember,
         })
         .then(response => {
           console.log(response.data);
@@ -271,56 +232,16 @@ export default {
     },
     formReset() {
       this.form.email = null;
-      this.form.password = null;
       this.reset = true;
       requestAnimationFrame(() => {
         this.$refs.observer.reset();
       });
-    },
-    switchVisibility() {
-      this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
     },
   },
 };
 </script>
 
 <style lang="sass">
-.checkbox
-  position: relative
-  display: block
-  input
-    position: absolute
-    z-index: -1
-    opacity: 0
-    transition: $tr
-    &:checked + .checkbox__text::after
-      opacity: 1
-  &__text
-    position: relative
-    transition: $tr
-    padding:
-      left: 25px
-    &::before
-      content: ''
-      position: absolute
-      left: 0
-      top: 3px
-      width: 16px
-      height: 16px
-      cursor: pointer
-      background-color: #e1e1e1
-    &::after
-      content: "\f00c"
-      font-family: FontAwesome
-      position: absolute
-      left: 1px
-      top: 3px
-      font-size: 13px
-      line-height: 16px
-      transition: $tr
-      opacity: 0
-      cursor: pointer
-
 .authorisation
   display: block
   width: 100%
