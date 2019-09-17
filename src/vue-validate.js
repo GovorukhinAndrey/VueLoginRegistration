@@ -1,5 +1,5 @@
 import { extend } from 'vee-validate';
-import { required, email, min, regex } from 'vee-validate/dist/rules';
+import { required, email, min, regex, numeric } from 'vee-validate/dist/rules';
 
 // Add a rule.
 extend('email', {
@@ -18,7 +18,12 @@ extend('fullName', {
   message: 'Введите Правильное ФИО', // the error message
 });
 
-extend('telephone', {
+extend('phoneMin', {
   ...min,
-  message: 'введите больше 10 цифр',
+  message: 'введите больше 10 символов',
+});
+
+extend('phoneNum', {
+  ...numeric,
+  message: 'вводите цифры без пробела',
 });
